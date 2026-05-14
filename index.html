@@ -3,52 +3,244 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Haptic Controller</title>
+  <title>Haptic Vest Controller</title>
   <style>
-    /* Your original CSS here */
-    body { background: #0a0a0f; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-    button { padding: 15px; margin: 10px; width: 80%; font-size: 1.2rem; cursor: pointer; }
-    .motor-btn { background: #12121a; border: 1px solid #00e5ff; color: #00e5ff; }
-    #log { margin-top: 20px; font-family: monospace; color: #555570; }
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+    :root {
+      --bg: #0a0a0f;
+      --panel: #12121a;
+      --border: #2a2a3a;
+      --accent: #00e5ff;
+      --accent2: #ff3d6b;
+      --front-btn: #0d2b3e;
+      --front-active: #00e5ff;
+      --back-btn: #2b0d1e;
+      --back-active: #ff3d6b;
+      --text: #e0e0f0;
+      --muted: #555570;
+      --connected: #00ff99;
+      --disconnected: #ff3d6b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    header {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 15px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .status-group { display: flex; align-items: center; gap: 10px; }
+    .status-dot { width: 10px; height: 10px; background: var(--disconnected); border-radius: 50%; box-shadow: 0 0 10px var(--disconnected); transition: 0.3s; }
+    .status-dot.connected { background: var(--connected); box-shadow: 0 0 10px var(--connected); }
+    .status-text { font-family: 'Share+Tech+Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; color: var(--disconnected); }
+    .status-text.connected { color: var(--connected); }
+
+    button#connectBtn {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 8px 16px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button#connectBtn.disconnect { border-color: var(--accent2); color: var(--accent2); }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 30px;
+    }
+
+    .section-label {
+      grid-column: span 2;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-top: 10px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 5px;
+    }
+
+    .motor-btn {
+      aspect-ratio: 1/1;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .motor-btn span { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
+    .motor-btn label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; pointer-events: none; }
+
+    /* Front Motors (1-4) Style */
+    .motor-btn.front { border-bottom: 4px solid var(--front-btn); }
+    .motor-btn.front:active { background: var(--front-btn); border-color: var(--front-active); transform: scale(0.95); }
+    .motor-btn.front:active span { color: var(--front-active); }
+
+    /* Back Motors (5-8) Style */
+    .motor-btn.back { border-bottom: 4px solid var(--back-btn); }
+    .motor-btn.back:active { background: var(--back-btn); border-color: var(--back-active); transform: scale(0.95); }
+    .motor-btn.back:active span { color: var(--back-active); }
+
+    #log {
+      width: 100%;
+      max-width: 500px;
+      background: #050508;
+      border: 1px solid var(--border);
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Share+Tech+Mono', monospace;
+      font-size: 0.75rem;
+      min-height: 80px;
+      color: var(--muted);
+      text-align: left;
+    }
+
+    .disconnected .grid-container { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
   </style>
 </head>
-<body>
-  <h1>Haptic Controller</h1>
-  <button id="connectBtn" onclick="connect()" style="background: #00e5ff; color: black;">Connect to Vest</button>
-  <div id="controls" style="display:none;">
-    <button class="motor-btn" onclick="send('1')">Motor 1</button>
-    <button class="motor-btn" onclick="send('2')">Motor 2</button>
-    <button class="motor-btn" onclick="send('3')">Motor 3</button>
-    <button class="motor-btn" onclick="send('4')">Motor 4</button>
+<body class="disconnected">
+
+  <header>
+    <div class="status-group">
+      <div id="statusDot" class="status-dot"></div>
+      <div id="statusText" class="status-text">DISCONNECTED</div>
+    </div>
+    <button id="connectBtn" onclick="toggleConnection()">Connect</button>
+  </header>
+
+  <div class="grid-container">
+    <div class="section-label">Front Array</div>
+    <div class="motor-btn front" onmousedown="send('1')" ontouchstart="send('1')"><span>1</span><label>Upper Left</label></div>
+    <div class="motor-btn front" onmousedown="send('2')" ontouchstart="send('2')"><span>2</span><label>Upper Right</label></div>
+    <div class="motor-btn front" onmousedown="send('3')" ontouchstart="send('3')"><span>3</span><label>Lower Left</label></div>
+    <div class="motor-btn front" onmousedown="send('4')" ontouchstart="send('4')"><span>4</span><label>Lower Right</label></div>
+
+    <div class="section-label">Rear Array</div>
+    <div class="motor-btn back" onmousedown="send('5')" ontouchstart="send('5')"><span>5</span><label>Upper Left</label></div>
+    <div class="motor-btn back" onmousedown="send('6')" ontouchstart="send('6')"><span>6</span><label>Upper Right</label></div>
+    <div class="motor-btn back" onmousedown="send('7')" ontouchstart="send('7')"><span>7</span><label>Lower Left</label></div>
+    <div class="motor-btn back" onmousedown="send('8')" ontouchstart="send('8')"><span>8</span><label>Lower Right</label></div>
   </div>
-  <div id="log">Status: Disconnected</div>
+
+  <div id="log">> System ready...</div>
 
   <script>
-    const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+    const SERVICE_UUID        = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
     const CHARACTERISTIC_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+
+    let device = null;
     let characteristic = null;
+
+    async function toggleConnection() {
+      if (device && device.gatt.connected) {
+        device.gatt.disconnect();
+      } else {
+        await connect();
+      }
+    }
 
     async function connect() {
       try {
-        const device = await navigator.bluetooth.requestDevice({
+        log('Initiating Bluetooth Scan...');
+        device = await navigator.bluetooth.requestDevice({
           filters: [{ namePrefix: 'Hapt' }],
           optionalServices: [SERVICE_UUID]
         });
+
+        device.addEventListener('gattserverdisconnected', onDisconnected);
+
+        log('Connecting to GATT Server...');
         const server = await device.gatt.connect();
-        const service = await server.getPrimaryService(SERVICE_UUID);
-        characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
         
-        document.getElementById('controls').style.display = 'block';
-        document.getElementById('log').innerText = "Status: Connected!";
+        log('Locating UART Service...');
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        
+        log('Binding Characteristic...');
+        characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+        onConnected();
       } catch (err) {
-        document.getElementById('log').innerText = "Error: " + err.message;
+        log(`<span style="color:var(--accent2)">Error: ${err.message}</span>`);
+        device = null;
       }
+    }
+
+    function onConnected() {
+      document.getElementById('statusDot').classList.add('connected');
+      document.getElementById('statusText').classList.add('connected');
+      document.getElementById('statusText').textContent = 'CONNECTED';
+      document.getElementById('connectBtn').textContent = 'Disconnect';
+      document.getElementById('connectBtn').classList.add('disconnect');
+      document.body.classList.remove('disconnected');
+      log(`<span style="color:var(--connected)">Linked to: ${device.name}</span>`);
+    }
+
+    function onDisconnected() {
+      document.getElementById('statusDot').classList.remove('connected');
+      document.getElementById('statusText').classList.remove('connected');
+      document.getElementById('statusText').textContent = 'DISCONNECTED';
+      document.getElementById('connectBtn').textContent = 'Connect';
+      document.getElementById('connectBtn').classList.remove('disconnect');
+      document.body.classList.add('disconnected');
+      characteristic = null;
+      log('<span style="color:var(--accent2)">Connection terminated</span>');
     }
 
     async function send(motorNum) {
       if (!characteristic) return;
-      const data = new TextEncoder().encode(`!B${motorNum}1`);
-      await characteristic.writeValue(data);
+      
+      // Standard Bluefruit Control Pad packet format: !B + button number + 1 (pressed)
+      const packet = `!B${motorNum}1`;
+      const data = new TextEncoder().encode(packet);
+
+      try {
+        await characteristic.writeValue(data);
+        log(`Triggering Motor ${motorNum}...`);
+      } catch (err) {
+        log(`<span style="color:var(--accent2)">TX Error: ${err.message}</span>`);
+      }
+    }
+
+    function log(msg) {
+      const logEl = document.getElementById('log');
+      logEl.innerHTML = `> ${msg}`;
     }
   </script>
 </body>
