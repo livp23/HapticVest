@@ -6,44 +6,65 @@
   <title>Haptic Vest Controller</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
     :root {
       --bg: #0a0a0f; --panel: #12121a; --border: #2a2a3a; --accent: #00e5ff;
       --accent2: #ff3d6b; --front-btn: #0d2b3e; --front-active: #00e5ff;
       --back-btn: #2b0d1e; --back-active: #ff3d6b; --text: #e0e0f0;
       --muted: #555570; --connected: #00ff99; --disconnected: #ff3d6b;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
     body {
       background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif;
       min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px;
     }
+
     header {
       width: 100%; max-width: 500px; display: flex; justify-content: space-between;
       align-items: center; margin-bottom: 30px; padding: 15px;
       background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
     }
+
     .status-group { display: flex; align-items: center; gap: 10px; }
     .status-dot { width: 10px; height: 10px; background: var(--disconnected); border-radius: 50%; transition: 0.3s; }
     .status-dot.connected { background: var(--connected); box-shadow: 0 0 10px var(--connected); }
     .status-text { font-family: 'Share+Tech+Mono', monospace; font-size: 0.8rem; color: var(--disconnected); }
     .status-text.connected { color: var(--connected); }
+
     button#connectBtn {
       background: transparent; border: 1px solid var(--accent); color: var(--accent);
       padding: 8px 16px; font-weight: 700; border-radius: 6px; cursor: pointer;
     }
+
     .grid-container {
       display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 500px;
     }
-    .section-label { grid-column: span 2; font-size: 0.7rem; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+
+    .section-label { 
+      grid-column: span 2; font-size: 0.7rem; text-transform: uppercase; 
+      color: var(--muted); border-bottom: 1px solid var(--border); margin-top: 10px;
+    }
+
     .motor-btn {
       aspect-ratio: 1/1; background: var(--panel); border: 1px solid var(--border);
       border-radius: 16px; display: flex; flex-direction: column; justify-content: center;
-      align-items: center; cursor: pointer;
+      align-items: center; cursor: pointer; transition: 0.2s;
     }
+
     .motor-btn span { font-size: 1.5rem; font-weight: 700; }
+    .motor-btn label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; }
+
     .motor-btn.front:active { background: var(--front-btn); border-color: var(--front-active); }
     .motor-btn.back:active { background: var(--back-btn); border-color: var(--back-active); }
-    #log { width: 100%; max-width: 500px; background: #050508; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-top: 20px; font-family: 'Share+Tech+Mono'; font-size: 0.75rem; color: var(--muted); }
+
+    #log { 
+      width: 100%; max-width: 500px; background: #050508; border: 1px solid var(--border); 
+      padding: 15px; border-radius: 8px; margin-top: 20px; font-family: 'Share+Tech+Mono'; 
+      font-size: 0.75rem; color: var(--muted); min-height: 60px;
+    }
+
     .disconnected .grid-container { opacity: 0.3; pointer-events: none; }
   </style>
 </head>
@@ -55,18 +76,20 @@
     </div>
     <button id="connectBtn" onclick="toggleConnection()">Connect</button>
   </header>
+
   <div class="grid-container">
     <div class="section-label">Front Array</div>
-    <div class="motor-btn front" onclick="send('1')"><span>1</span><label>UL</label></div>
-    <div class="motor-btn front" onclick="send('2')"><span>2</span><label>UR</label></div>
-    <div class="motor-btn front" onclick="send('3')"><span>3</span><label>LL</label></div>
-    <div class="motor-btn front" onclick="send('4')"><span>4</span><label>LR</label></div>
+    <div class="motor-btn front" onclick="send('1')"><span>1</span><label>Upper Left</label></div>
+    <div class="motor-btn front" onclick="send('2')"><span>2</span><label>Upper Right</label></div>
+    <div class="motor-btn front" onclick="send('3')"><span>3</span><label>Lower Left</label></div>
+    <div class="motor-btn front" onclick="send('4')"><span>4</span><label>Lower Right</label></div>
     <div class="section-label">Rear Array</div>
-    <div class="motor-btn back" onclick="send('5')"><span>5</span><label>UL</label></div>
-    <div class="motor-btn back" onclick="send('6')"><span>6</span><label>UR</label></div>
-    <div class="motor-btn back" onclick="send('7')"><span>7</span><label>LL</label></div>
-    <div class="motor-btn back" onclick="send('8')"><span>8</span><label>LR</label></div>
+    <div class="motor-btn back" onclick="send('5')"><span>5</span><label>Upper Left</label></div>
+    <div class="motor-btn back" onclick="send('6')"><span>6</span><label>Upper Right</label></div>
+    <div class="motor-btn back" onclick="send('7')"><span>7</span><label>Lower Left</label></div>
+    <div class="motor-btn back" onclick="send('8')"><span>8</span><label>Lower Right</label></div>
   </div>
+
   <div id="log">> System ready...</div>
 
   <script>
@@ -86,7 +109,6 @@
           filters: [{ namePrefix: 'Hapt' }],
           optionalServices: [SERVICE_UUID]
         });
-        device.addEventListener('gattserverdisconnected', onDisconnected);
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(SERVICE_UUID);
         characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
@@ -106,12 +128,10 @@
       document.getElementById('statusText').textContent = 'DISCONNECTED';
       document.body.classList.add('disconnected');
       characteristic = null;
-      log('Disconnected');
     }
 
     async function send(motorNum) {
       if (!characteristic) return;
-      // Added \n (newline) to the end of the packet
       const packet = `!B${motorNum}1\n`;
       const data = new TextEncoder().encode(packet);
       try {
