@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Haptic Controller</title>
+  <style>
+    /* Your original CSS here */
+    body { background: #0a0a0f; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+    button { padding: 15px; margin: 10px; width: 80%; font-size: 1.2rem; cursor: pointer; }
+    .motor-btn { background: #12121a; border: 1px solid #00e5ff; color: #00e5ff; }
+    #log { margin-top: 20px; font-family: monospace; color: #555570; }
+  </style>
+</head>
+<body>
+  <h1>Haptic Controller</h1>
+  <button id="connectBtn" onclick="connect()" style="background: #00e5ff; color: black;">Connect to Vest</button>
+  <div id="controls" style="display:none;">
+    <button class="motor-btn" onclick="send('1')">Motor 1</button>
+    <button class="motor-btn" onclick="send('2')">Motor 2</button>
+    <button class="motor-btn" onclick="send('3')">Motor 3</button>
+    <button class="motor-btn" onclick="send('4')">Motor 4</button>
+  </div>
+  <div id="log">Status: Disconnected</div>
+
+  <script>
+    const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+    const CHARACTERISTIC_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+    let characteristic = null;
+
+    async function connect() {
+      try {
+        const device = await navigator.bluetooth.requestDevice({
+          filters: [{ namePrefix: 'Hapt' }],
+          optionalServices: [SERVICE_UUID]
+        });
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+        
+        document.getElementById('controls').style.display = 'block';
+        document.getElementById('log').innerText = "Status: Connected!";
+      } catch (err) {
+        document.getElementById('log').innerText = "Error: " + err.message;
+      }
+    }
+
+    async function send(motorNum) {
+      if (!characteristic) return;
+      const data = new TextEncoder().encode(`!B${motorNum}1`);
+      await characteristic.writeValue(data);
+    }
+  </script>
+</body>
+</html>
