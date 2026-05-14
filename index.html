@@ -14,7 +14,7 @@
       --muted: #555570; --connected: #00ff99; --disconnected: #ff3d6b;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
 
     body {
       background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif;
@@ -45,52 +45,58 @@
     .section-label { 
       grid-column: span 2; font-size: 0.7rem; text-transform: uppercase; 
       color: var(--muted); border-bottom: 1px solid var(--border); margin-top: 10px;
+      padding-bottom: 5px; letter-spacing: 2px;
     }
 
     .motor-btn {
       aspect-ratio: 1/1; background: var(--panel); border: 1px solid var(--border);
       border-radius: 16px; display: flex; flex-direction: column; justify-content: center;
-      align-items: center; cursor: pointer; transition: 0.2s;
+      align-items: center; cursor: pointer; transition: 0.1s;
+      touch-action: none; /* Prevents scrolling while holding */
     }
 
-    .motor-btn span { font-size: 1.5rem; font-weight: 700; }
-    .motor-btn label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; }
+    .motor-btn span { font-size: 1.8rem; font-weight: 700; }
+    .motor-btn label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; }
 
-    .motor-btn.front:active { background: var(--front-btn); border-color: var(--front-active); }
-    .motor-btn.back:active { background: var(--back-btn); border-color: var(--back-active); }
+    .motor-btn.front { border-bottom: 4px solid var(--front-btn); }
+    .motor-btn.front:active { background: var(--front-btn); border-color: var(--front-active); transform: scale(0.96); }
+    
+    .motor-btn.back { border-bottom: 4px solid var(--back-btn); }
+    .motor-btn.back:active { background: var(--back-btn); border-color: var(--back-active); transform: scale(0.96); }
 
     #log { 
       width: 100%; max-width: 500px; background: #050508; border: 1px solid var(--border); 
-      padding: 15px; border-radius: 8px; margin-top: 20px; font-family: 'Share+Tech+Mono'; 
+      padding: 15px; border-radius: 8px; margin-top: 25px; font-family: 'Share+Tech+Mono'; 
       font-size: 0.75rem; color: var(--muted); min-height: 60px;
     }
 
-    .disconnected .grid-container { opacity: 0.3; pointer-events: none; }
+    .disconnected .grid-container { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
   </style>
 </head>
 <body class="disconnected">
   <header>
     <div class="status-group">
       <div id="statusDot" class="status-dot"></div>
-      <div id="statusText" class="status-text">DISCONNECTED</div>
+      <div id="statusText" class="status-text">SYSTEM OFFLINE</div>
     </div>
-    <button id="connectBtn" onclick="toggleConnection()">Connect</button>
+    <button id="connectBtn" onclick="toggleConnection()">INITIALIZE</button>
   </header>
 
   <div class="grid-container">
-    <div class="section-label">Front Array</div>
-    <div class="motor-btn front" onclick="send('1')"><span>1</span><label>Upper Left</label></div>
-    <div class="motor-btn front" onclick="send('2')"><span>2</span><label>Upper Right</label></div>
-    <div class="motor-btn front" onclick="send('3')"><span>3</span><label>Lower Left</label></div>
-    <div class="motor-btn front" onclick="send('4')"><span>4</span><label>Lower Right</label></div>
-    <div class="section-label">Rear Array</div>
-    <div class="motor-btn back" onclick="send('5')"><span>5</span><label>Upper Left</label></div>
-    <div class="motor-btn back" onclick="send('6')"><span>6</span><label>Upper Right</label></div>
-    <div class="motor-btn back" onclick="send('7')"><span>7</span><label>Lower Left</label></div>
-    <div class="motor-btn back" onclick="send('8')"><span>8</span><label>Lower Right</label></div>
+    <div class="section-label">Anterior Haptic Array</div>
+    <div class="motor-btn front" onpointerdown="trigger(1,1)" onpointerup="trigger(1,0)" onpointerleave="trigger(1,0)"><span>1</span><label>Upper Left</label></div>
+    <div class="motor-btn front" onpointerdown="trigger(2,1)" onpointerup="trigger(2,0)" onpointerleave="trigger(2,0)"><span>2</span><label>Upper Right</label></div>
+    <div class="motor-btn front" onpointerdown="trigger(3,1)" onpointerup="trigger(3,0)" onpointerleave="trigger(3,0)"><span>3</span><label>Lower Left</label></div>
+    <div class="motor-btn front" onpointerdown="trigger(4,1)" onpointerup="trigger(4,0)" onpointerleave="trigger(4,0)"><span>4</span><label>Lower Right</label></div>
+    
+    <div class="section-label">Posterior Haptic Array</div>
+    <div class="motor-btn back" onpointerdown="trigger(5,1)" onpointerup="trigger(5,0)" onpointerleave="trigger(5,0)"><span>5</span><label>Upper Left</label></div>
+    <div class="motor-btn back" onpointerdown="trigger(6,1)" onpointerup="trigger(6,0)" onpointerleave="trigger(6,0)"><span>6</span><label>Upper Right</label></div>
+    <div class="motor-btn back" onpointerdown="trigger(7,1)" onpointerup="trigger(7,0)" onpointerleave="trigger(7,0)"><span>7</span><label>Lower Left</label></div>
+    <div class="motor-btn back" onpointerdown="trigger(8,1)" onpointerup="trigger(8,0)" onpointerleave="trigger(8,0)"><span>8</span><label>Lower Right</label></div>
   </div>
 
-  <div id="log">> System ready...</div>
+  <div id="log">> Awaiting connection...</div>
 
   <script>
     const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
@@ -104,7 +110,7 @@
 
     async function connect() {
       try {
-        log('Scanning...');
+        log('Scanning for Haptic Vest...');
         device = await navigator.bluetooth.requestDevice({
           filters: [{ namePrefix: 'Hapt' }],
           optionalServices: [SERVICE_UUID]
@@ -118,26 +124,28 @@
 
     function onConnected() {
       document.getElementById('statusDot').classList.add('connected');
-      document.getElementById('statusText').textContent = 'CONNECTED';
+      document.getElementById('statusText').textContent = 'SYSTEM ONLINE';
+      document.getElementById('statusText').classList.add('connected');
       document.body.classList.remove('disconnected');
-      log('Connected to ' + device.name);
+      log('Protocol established with ' + device.name);
     }
 
     function onDisconnected() {
       document.getElementById('statusDot').classList.remove('connected');
-      document.getElementById('statusText').textContent = 'DISCONNECTED';
+      document.getElementById('statusText').textContent = 'SYSTEM OFFLINE';
       document.body.classList.add('disconnected');
       characteristic = null;
+      log('Connection terminated.');
     }
 
-    async function send(motorNum) {
+    async function trigger(motorNum, state) {
       if (!characteristic) return;
-      const packet = `!B${motorNum}1\n`;
+      // !B + motor + 1 (start) or 0 (stop)
+      const packet = `!B${motorNum}${state}\n`;
       const data = new TextEncoder().encode(packet);
       try {
-        await characteristic.writeValue(data);
-        log('Sent: ' + packet.trim());
-      } catch (err) { log('TX Error: ' + err.message); }
+        await characteristic.writeValueWithoutResponse(data);
+      } catch (err) { console.log('TX Error'); }
     }
 
     function log(msg) { document.getElementById('log').innerHTML = '> ' + msg; }
