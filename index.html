@@ -63,67 +63,79 @@
   <div class="motor-section"><div class="section-label back">▼ Back Motors</div><div id="backRow" class="motor-row"></div></div>
   <div class="log" id="log">Waiting for connection...</div>
 
-  <script>
-    const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-    const CHARACTERISTIC_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-    let device = null, characteristic = null;
+<script>
+  const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+  const CHARACTERISTIC_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+  let device = null, characteristic = null;
 
-    function buildButtons(containerId, startNum, type) {
-      const row = document.getElementById(containerId);
-      const labels = ['UL', 'UR', 'LL', 'LR'];
-      for (let i = 0; i < 4; i++) {
-        const num = startNum + i;
-        const btn = document.createElement('div');
-        btn.className = `motor-btn ${type}`;
-        btn.innerHTML = `<span class="motor-num">${num}</span><span class="motor-label">${labels[i]}</span>`;
-        btn.onpointerdown = (e) => { e.preventDefault(); trigger(num, 1, btn); };
-        btn.onpointerup = (e) => { e.preventDefault(); trigger(num, 0, btn); };
-        btn.onpointerleave = (e) => { e.preventDefault(); trigger(num, 0, btn); };
-        row.appendChild(btn);
+  // Build the buttons
+  function buildButtons(containerId, startNum, type) {
+    const row = document.getElementById(containerId);
+    const labels = ['UL', 'UR', 'LL', 'LR'];
+    for (let i = 0; i < 4; i++) {
+      const num = startNum + i;
+      const btn = document.createElement('div');
+      btn.className = `motor-btn ${type}`;
+      btn.innerHTML = `<span class="motor-num">${num}</span><span class="motor-label">${labels[i]}</span>`;
+      
+      // Use Pointer Events for best response
+      btn.onpointerdown = (e) => { e.preventDefault(); trigger(num, 1, btn); };
+      btn.onpointerup = (e) => { e.preventDefault(); trigger(num, 0, btn); };
+      btn.onpointerleave = (e) => { e.preventDefault(); trigger(num, 0, btn); };
+      row.appendChild(btn);
+    }
+  }
+  buildButtons('frontRow', 1, 'front');
+  buildButtons('backRow', 5, 'back');
+
+  async function trigger(num, state, btn) {
+    if (!characteristic) return;
+    
+    state === 1 ? btn.classList.add('active') : btn.classList.remove('active');
+    
+    // We send exactly 2 bytes. Just like you typed in Serial!
+    const data = new TextEncoder().encode(`${num}${state}`);
+    
+    try {
+      // Switched to writeValueWithResponse for better reliability
+      await characteristic.writeValueWithResponse(data);
+    } catch (e) {
+      console.log("BLE Write Error: ", e);
+    }
+  }
+
+  async function toggleConnect() {
+    if (device && device.gatt.connected) {
+      await device.gatt.disconnect();
+    } else {
+      try {
+        log('Requesting Device...');
+        device = await navigator.bluetooth.requestDevice({
+          filters: [{ name: 'Haptic' }],
+          optionalServices: [SERVICE_UUID]
+        });
+        
+        log('Connecting to GATT...');
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+        
+        onConnected();
+      } catch (err) {
+        log('Error: ' + err.message);
       }
     }
-    buildButtons('frontRow', 1, 'front');
-    buildButtons('backRow', 5, 'back');
+  }
 
-    async function trigger(num, state, btn) {
-      if (!characteristic) return;
-      state === 1 ? btn.classList.add('active') : btn.classList.remove('active');
-      const data = new TextEncoder().encode(`!B${num}${state}`);
-      try { await characteristic.writeValueWithoutResponse(data); } catch (e) {}
-    }
+  function onConnected() {
+    document.getElementById('statusDot').classList.add('connected');
+    document.getElementById('statusText').textContent = 'CONNECTED';
+    document.getElementById('connectBtn').textContent = 'Disconnect';
+    document.body.classList.remove('disconnected');
+    log('Connection Successful!');
+  }
 
-    async function toggleConnect() {
-      if (device && device.gatt.connected) device.gatt.disconnect();
-      else {
-        try {
-          log('Scanning...');
-          device = await navigator.bluetooth.requestDevice({ filters: [{ namePrefix: 'Hapt' }], optionalServices: [SERVICE_UUID] });
-          device.addEventListener('gattserverdisconnected', onDisconnected);
-          const server = await device.gatt.connect();
-          const service = await server.getPrimaryService(SERVICE_UUID);
-          characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
-          onConnected();
-        } catch (err) { log('Error: ' + err.message); }
-      }
-    }
-    function onConnected() {
-      document.getElementById('statusDot').classList.add('connected');
-      document.getElementById('statusText').textContent = 'CONNECTED';
-      document.getElementById('connectBtn').textContent = 'Disconnect';
-      document.getElementById('connectBtn').classList.add('disconnect');
-      document.body.classList.remove('disconnected');
-      log('System Ready.');
-    }
-    function onDisconnected() {
-      document.getElementById('statusDot').classList.remove('connected');
-      document.getElementById('statusText').textContent = 'DISCONNECTED';
-      document.getElementById('connectBtn').textContent = 'Connect';
-      document.getElementById('connectBtn').classList.remove('disconnect');
-      document.body.classList.add('disconnected');
-      characteristic = null;
-      log('Disconnected.');
-    }
-    function log(m) { document.getElementById('log').innerHTML = m; }
-  </script>
+  function log(m) { document.getElementById('log').textContent = m; }
+</script>
 </body>
 </html>
