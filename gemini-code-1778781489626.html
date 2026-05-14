@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Haptic Vest Controller</title>
+  </head>
+<body class="disconnected">
+  <script>
+    const SERVICE_UUID        = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+    const CHARACTERISTIC_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+
+    let device = null;
+    let characteristic = null;
+
+    // ... [buildButtons and motor control logic remain the same] ...
+
+    async function connect() {
+      try {
+        log('Scanning for Haptic device...');
+        
+        // Using namePrefix and acceptAllDevices logic for better compatibility
+        device = await navigator.bluetooth.requestDevice({
+          filters: [
+            { namePrefix: 'Hapt' } // Matches "Haptic" more robustly
+          ],
+          optionalServices: [SERVICE_UUID]
+        });
+
+        device.addEventListener('gattserverdisconnected', onDisconnected);
+
+        log('Connecting to GATT Server...');
+        const server  = await device.gatt.connect();
+        
+        log('Fetching Service...');
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        
+        log('Fetching Characteristic...');
+        characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+        onConnected();
+      } catch (err) {
+        log(`<span class="err">Error: ${err.message}</span>`);
+        console.error(err);
+        device = null;
+        characteristic = null;
+      }
+    }
+
+    // ... [onConnected, onDisconnected, and log helpers remain the same] ...
+  </script>
+</body>
+</html>
