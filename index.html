@@ -8,147 +8,461 @@
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
 
     :root {
-      --bg: #0a0a0f; --panel: #12121a; --border: #2a2a3a; --accent: #00e5ff;
-      --accent2: #ff3d6b; --front-btn: #0d2b3e; --front-active: #00e5ff;
-      --back-btn: #2b0d1e; --back-active: #ff3d6b; --text: #e0e0f0;
-      --muted: #555570; --connected: #00ff99; --disconnected: #ff3d6b;
+      --bg: #0a0a0f;
+      --panel: #12121a;
+      --border: #2a2a3a;
+      --accent: #00e5ff;
+      --accent2: #ff3d6b;
+      --front-btn: #0d2b3e;
+      --front-active: #00e5ff;
+      --back-btn: #2b0d1e;
+      --back-active: #ff3d6b;
+      --text: #e0e0f0;
+      --muted: #555570;
+      --connected: #00ff99;
+      --disconnected: #ff3d6b;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     body {
-      background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif;
-      min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px;
+      gap: 20px;
+      background-image:
+        radial-gradient(ellipse at 20% 0%, rgba(0,229,255,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(255,61,107,0.05) 0%, transparent 60%);
     }
 
-    header {
-      width: 100%; max-width: 500px; display: flex; justify-content: space-between;
-      align-items: center; margin-bottom: 30px; padding: 15px;
-      background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+    h1 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.1rem;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      text-align: center;
+      opacity: 0.9;
     }
 
-    .status-group { display: flex; align-items: center; gap: 10px; }
-    .status-dot { width: 10px; height: 10px; background: var(--disconnected); border-radius: 50%; transition: 0.3s; }
-    .status-dot.connected { background: var(--connected); box-shadow: 0 0 10px var(--connected); }
-    .status-text { font-family: 'Share+Tech+Mono', monospace; font-size: 0.8rem; color: var(--disconnected); }
+    /* Status bar */
+    .status-bar {
+      width: 100%;
+      max-width: 420px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--disconnected);
+      box-shadow: 0 0 8px var(--disconnected);
+      transition: all 0.3s ease;
+    }
+
+    .status-dot.connected {
+      background: var(--connected);
+      box-shadow: 0 0 8px var(--connected);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .status-text {
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+
     .status-text.connected { color: var(--connected); }
 
-    button#connectBtn {
-      background: transparent; border: 1px solid var(--accent); color: var(--accent);
-      padding: 8px 16px; font-weight: 700; border-radius: 6px; cursor: pointer;
+    /* Connect button */
+    .connect-btn {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
     }
 
-    .grid-container {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 500px;
+    .connect-btn:hover, .connect-btn:active {
+      background: var(--accent);
+      color: var(--bg);
     }
 
-    .section-label { 
-      grid-column: span 2; font-size: 0.7rem; text-transform: uppercase; 
-      color: var(--muted); border-bottom: 1px solid var(--border); margin-top: 10px;
-      padding-bottom: 5px; letter-spacing: 2px;
+    .connect-btn.disconnect {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    .connect-btn.disconnect:hover, .connect-btn.disconnect:active {
+      background: var(--accent2);
+      color: var(--bg);
+    }
+
+    /* Motor grid */
+    .motor-section {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-left: 4px;
+    }
+
+    .section-label.front { color: rgba(0,229,255,0.5); }
+    .section-label.back  { color: rgba(255,61,107,0.5); }
+
+    .motor-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
     }
 
     .motor-btn {
-      aspect-ratio: 1/1; background: var(--panel); border: 1px solid var(--border);
-      border-radius: 16px; display: flex; flex-direction: column; justify-content: center;
-      align-items: center; cursor: pointer; transition: 0.1s;
-      touch-action: none; /* Prevents scrolling while holding */
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      overflow: hidden;
     }
 
-    .motor-btn span { font-size: 1.8rem; font-weight: 700; }
-    .motor-btn label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; }
-
-    .motor-btn.front { border-bottom: 4px solid var(--front-btn); }
-    .motor-btn.front:active { background: var(--front-btn); border-color: var(--front-active); transform: scale(0.96); }
-    
-    .motor-btn.back { border-bottom: 4px solid var(--back-btn); }
-    .motor-btn.back:active { background: var(--back-btn); border-color: var(--back-active); transform: scale(0.96); }
-
-    #log { 
-      width: 100%; max-width: 500px; background: #050508; border: 1px solid var(--border); 
-      padding: 15px; border-radius: 8px; margin-top: 25px; font-family: 'Share+Tech+Mono'; 
-      font-size: 0.75rem; color: var(--muted); min-height: 60px;
+    /* Front motors (1-4) */
+    .motor-btn.front {
+      background: var(--front-btn);
+      border-color: rgba(0,229,255,0.2);
     }
 
-    .disconnected .grid-container { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
+    .motor-btn.front::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(0,229,255,0.15) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .motor-btn.front:active::before,
+    .motor-btn.front.active::before { opacity: 1; }
+
+    .motor-btn.front:active,
+    .motor-btn.front.active {
+      background: rgba(0,229,255,0.15);
+      border-color: var(--front-active);
+      box-shadow: 0 0 20px rgba(0,229,255,0.3), inset 0 0 20px rgba(0,229,255,0.05);
+      transform: scale(0.96);
+    }
+
+    /* Back motors (5-8) */
+    .motor-btn.back {
+      background: var(--back-btn);
+      border-color: rgba(255,61,107,0.2);
+    }
+
+    .motor-btn.back::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(255,61,107,0.15) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .motor-btn.back:active::before,
+    .motor-btn.back.active::before { opacity: 1; }
+
+    .motor-btn.back:active,
+    .motor-btn.back.active {
+      background: rgba(255,61,107,0.15);
+      border-color: var(--back-active);
+      box-shadow: 0 0 20px rgba(255,61,107,0.3), inset 0 0 20px rgba(255,61,107,0.05);
+      transform: scale(0.96);
+    }
+
+    .motor-num {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+      line-height: 1;
+      transition: color 0.15s ease;
+    }
+
+    .front .motor-num { color: rgba(0,229,255,0.7); }
+    .front.active .motor-num, .front:active .motor-num { color: var(--front-active); }
+
+    .back .motor-num { color: rgba(255,61,107,0.7); }
+    .back.active .motor-num, .back:active .motor-num { color: var(--back-active); }
+
+    .motor-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* Divider */
+    .divider {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider-text {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* Log */
+    .log {
+      width: 100%;
+      max-width: 420px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      min-height: 40px;
+      line-height: 1.6;
+    }
+
+    .log span { color: var(--accent); }
+    .log span.err { color: var(--accent2); }
+
+    /* Disabled state */
+    body.disconnected .motor-btn {
+      opacity: 0.4;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body class="disconnected">
-  <header>
-    <div class="status-group">
-      <div id="statusDot" class="status-dot"></div>
-      <div id="statusText" class="status-text">SYSTEM OFFLINE</div>
-    </div>
-    <button id="connectBtn" onclick="toggleConnection()">INITIALIZE</button>
-  </header>
 
-  <div class="grid-container">
-    <div class="section-label">Anterior Haptic Array</div>
-    <div class="motor-btn front" onpointerdown="trigger(1,1)" onpointerup="trigger(1,0)" onpointerleave="trigger(1,0)"><span>1</span><label>Upper Left</label></div>
-    <div class="motor-btn front" onpointerdown="trigger(2,1)" onpointerup="trigger(2,0)" onpointerleave="trigger(2,0)"><span>2</span><label>Upper Right</label></div>
-    <div class="motor-btn front" onpointerdown="trigger(3,1)" onpointerup="trigger(3,0)" onpointerleave="trigger(3,0)"><span>3</span><label>Lower Left</label></div>
-    <div class="motor-btn front" onpointerdown="trigger(4,1)" onpointerup="trigger(4,0)" onpointerleave="trigger(4,0)"><span>4</span><label>Lower Right</label></div>
-    
-    <div class="section-label">Posterior Haptic Array</div>
-    <div class="motor-btn back" onpointerdown="trigger(5,1)" onpointerup="trigger(5,0)" onpointerleave="trigger(5,0)"><span>5</span><label>Upper Left</label></div>
-    <div class="motor-btn back" onpointerdown="trigger(6,1)" onpointerup="trigger(6,0)" onpointerleave="trigger(6,0)"><span>6</span><label>Upper Right</label></div>
-    <div class="motor-btn back" onpointerdown="trigger(7,1)" onpointerup="trigger(7,0)" onpointerleave="trigger(7,0)"><span>7</span><label>Lower Left</label></div>
-    <div class="motor-btn back" onpointerdown="trigger(8,1)" onpointerup="trigger(8,0)" onpointerleave="trigger(8,0)"><span>8</span><label>Lower Right</label></div>
+  <h1>⚡ Haptic Vest Controller</h1>
+
+  <!-- Status + Connect -->
+  <div class="status-bar">
+    <div class="status-indicator">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-text" id="statusText">DISCONNECTED</span>
+    </div>
+    <button class="connect-btn" id="connectBtn" onclick="toggleConnect()">Connect</button>
   </div>
 
-  <div id="log">> Awaiting connection...</div>
+  <!-- Front motors 1–4 -->
+  <div class="motor-section">
+    <div class="section-label front">▲ Front Motors</div>
+    <div class="motor-row" id="frontRow"></div>
+  </div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-text">vest</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- Back motors 5–8 -->
+  <div class="motor-section">
+    <div class="section-label back">▼ Back Motors</div>
+    <div class="motor-row" id="backRow"></div>
+  </div>
+
+  <!-- Log -->
+  <div class="log" id="log">Waiting for connection...</div>
 
   <script>
-    const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+    // ── BLE constants ──────────────────────────────────────────────────────────
+    const SERVICE_UUID        = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
     const CHARACTERISTIC_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-    let device = null; let characteristic = null;
 
-    async function toggleConnection() {
-      if (device && device.gatt.connected) { device.gatt.disconnect(); } 
-      else { await connect(); }
+    let device = null;
+    let characteristic = null;
+
+    // ── Build buttons ──────────────────────────────────────────────────────────
+    const frontLabels = ['FL', 'FR', 'FL', 'FR'];
+    const backLabels  = ['BL', 'BR', 'BL', 'BR'];
+
+    function buildButtons(containerId, startNum, type, labels) {
+      const row = document.getElementById(containerId);
+      for (let i = 0; i < 4; i++) {
+        const motorNum = startNum + i;
+        const btn = document.createElement('div');
+        btn.className = `motor-btn ${type}`;
+        btn.id = `btn${motorNum}`;
+        btn.innerHTML = `
+          <span class="motor-num">${motorNum}</span>
+          <span class="motor-label">${labels[i]}</span>
+        `;
+
+        // Touch events (mobile)
+        btn.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          motorOn(motorNum, btn);
+        }, { passive: false });
+
+        btn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          motorOff(motorNum, btn);
+        }, { passive: false });
+
+        // Mouse events (desktop testing)
+        btn.addEventListener('mousedown', () => motorOn(motorNum, btn));
+        btn.addEventListener('mouseup',   () => motorOff(motorNum, btn));
+        btn.addEventListener('mouseleave',() => motorOff(motorNum, btn));
+
+        row.appendChild(btn);
+      }
+    }
+
+    buildButtons('frontRow', 1, 'front', frontLabels);
+    buildButtons('backRow',  5, 'back',  backLabels);
+
+    // ── Motor control ──────────────────────────────────────────────────────────
+    async function sendCommand(cmd) {
+      if (!characteristic) return;
+      try {
+        const encoder = new TextEncoder();
+        await characteristic.writeValue(encoder.encode(cmd));
+      } catch (err) {
+        log(`<span class="err">Send error: ${err.message}</span>`);
+      }
+    }
+
+    function motorOn(num, btn) {
+      if (!characteristic) return;
+      btn.classList.add('active');
+      sendCommand(`${num} 99999000`);
+      log(`<span>Motor ${num} ON</span>`);
+    }
+
+    function motorOff(num, btn) {
+      if (!characteristic) return;
+      btn.classList.remove('active');
+      sendCommand(`cancel ${num}`);
+      log(`Motor ${num} off`);
+    }
+
+    // ── BLE connect/disconnect ─────────────────────────────────────────────────
+    async function toggleConnect() {
+      if (device && device.gatt.connected) {
+        device.gatt.disconnect();
+      } else {
+        await connect();
+      }
     }
 
     async function connect() {
       try {
-        log('Scanning for Haptic Vest...');
+        log('Scanning for Haptic device...');
         device = await navigator.bluetooth.requestDevice({
-          filters: [{ namePrefix: 'Hapt' }],
+          filters: [{ name: 'Haptic' }],
           optionalServices: [SERVICE_UUID]
         });
-        const server = await device.gatt.connect();
+
+        device.addEventListener('gattserverdisconnected', onDisconnected);
+
+        log('Connecting...');
+        const server  = await device.gatt.connect();
         const service = await server.getPrimaryService(SERVICE_UUID);
         characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
         onConnected();
-      } catch (err) { log('Error: ' + err.message); }
+      } catch (err) {
+        log(`<span class="err">Error: ${err.message}</span>`);
+        device = null;
+        characteristic = null;
+      }
     }
 
     function onConnected() {
       document.getElementById('statusDot').classList.add('connected');
-      document.getElementById('statusText').textContent = 'SYSTEM ONLINE';
       document.getElementById('statusText').classList.add('connected');
+      document.getElementById('statusText').textContent = 'CONNECTED';
+      document.getElementById('connectBtn').textContent = 'Disconnect';
+      document.getElementById('connectBtn').classList.add('disconnect');
       document.body.classList.remove('disconnected');
-      log('Protocol established with ' + device.name);
+      log(`<span>Connected to ${device.name}</span>`);
     }
 
     function onDisconnected() {
       document.getElementById('statusDot').classList.remove('connected');
-      document.getElementById('statusText').textContent = 'SYSTEM OFFLINE';
+      document.getElementById('statusText').classList.remove('connected');
+      document.getElementById('statusText').textContent = 'DISCONNECTED';
+      document.getElementById('connectBtn').textContent = 'Connect';
+      document.getElementById('connectBtn').classList.remove('disconnect');
       document.body.classList.add('disconnected');
       characteristic = null;
-      log('Connection terminated.');
+      log('<span class="err">Disconnected</span>');
     }
 
-    async function trigger(motorNum, state) {
-      if (!characteristic) return;
-      // !B + motor + 1 (start) or 0 (stop)
-      const packet = `!B${motorNum}${state}\n`;
-      const data = new TextEncoder().encode(packet);
-      try {
-        await characteristic.writeValueWithoutResponse(data);
-      } catch (err) { console.log('TX Error'); }
+    // ── Log helper ─────────────────────────────────────────────────────────────
+    function log(msg) {
+      document.getElementById('log').innerHTML = msg;
     }
-
-    function log(msg) { document.getElementById('log').innerHTML = '> ' + msg; }
   </script>
 </body>
 </html>
