@@ -6,305 +6,51 @@
   <title>Haptic Vest Controller</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
-
     :root {
-      --bg: #0a0a0f;
-      --panel: #12121a;
-      --border: #2a2a3a;
-      --accent: #00e5ff;
-      --accent2: #ff3d6b;
-      --front-btn: #0d2b3e;
-      --front-active: #00e5ff;
-      --back-btn: #2b0d1e;
-      --back-active: #ff3d6b;
-      --text: #e0e0f0;
-      --muted: #555570;
-      --connected: #00ff99;
-      --disconnected: #ff3d6b;
+      --bg: #0a0a0f; --panel: #12121a; --border: #2a2a3a; --accent: #00e5ff;
+      --accent2: #ff3d6b; --front-btn: #0d2b3e; --front-active: #00e5ff;
+      --back-btn: #2b0d1e; --back-active: #ff3d6b; --text: #e0e0f0;
+      --muted: #555570; --connected: #00ff99; --disconnected: #ff3d6b;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Rajdhani', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 16px;
-      gap: 20px;
+      background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+      padding: 20px 16px; gap: 20px;
       background-image:
         radial-gradient(ellipse at 20% 0%, rgba(0,229,255,0.05) 0%, transparent 60%),
         radial-gradient(ellipse at 80% 100%, rgba(255,61,107,0.05) 0%, transparent 60%);
     }
-
-    h1 {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1.1rem;
-      letter-spacing: 0.2em;
-      color: var(--accent);
-      text-transform: uppercase;
-      text-align: center;
-      opacity: 0.9;
-    }
-
-    /* Status bar */
-    .status-bar {
-      width: 100%;
-      max-width: 420px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--disconnected);
-      box-shadow: 0 0 8px var(--disconnected);
-      transition: all 0.3s ease;
-    }
-
-    .status-dot.connected {
-      background: var(--connected);
-      box-shadow: 0 0 8px var(--connected);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    .status-text {
-      color: var(--muted);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.05em;
-    }
-
+    h1 { font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; text-align: center; opacity: 0.9; }
+    .status-bar { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .status-indicator { display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--disconnected); box-shadow: 0 0 8px var(--disconnected); transition: all 0.3s ease; }
+    .status-dot.connected { background: var(--connected); box-shadow: 0 0 8px var(--connected); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .status-text { color: var(--muted); font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; }
     .status-text.connected { color: var(--connected); }
-
-    /* Connect button */
-    .connect-btn {
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.15em;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-transform: uppercase;
-    }
-
-    .connect-btn:hover, .connect-btn:active {
-      background: var(--accent);
-      color: var(--bg);
-    }
-
-    .connect-btn.disconnect {
-      border-color: var(--accent2);
-      color: var(--accent2);
-    }
-
-    .connect-btn.disconnect:hover, .connect-btn.disconnect:active {
-      background: var(--accent2);
-      color: var(--bg);
-    }
-
-    /* Motor grid */
-    .motor-section {
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .section-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding-left: 4px;
-    }
-
-    .section-label.front { color: rgba(0,229,255,0.5); }
-    .section-label.back  { color: rgba(255,61,107,0.5); }
-
-    .motor-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    .motor-btn {
-      position: relative;
-      aspect-ratio: 1;
-      border-radius: 14px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: all 0.15s ease;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: none;
-      overflow: hidden;
-    }
-
-    /* Front motors (1-4) */
-    .motor-btn.front {
-      background: var(--front-btn);
-      border-color: rgba(0,229,255,0.2);
-    }
-
-    .motor-btn.front::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(0,229,255,0.15) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity 0.15s ease;
-    }
-
-    .motor-btn.front:active::before,
-    .motor-btn.front.active::before { opacity: 1; }
-
-    .motor-btn.front:active,
-    .motor-btn.front.active {
-      background: rgba(0,229,255,0.15);
-      border-color: var(--front-active);
-      box-shadow: 0 0 20px rgba(0,229,255,0.3), inset 0 0 20px rgba(0,229,255,0.05);
-      transform: scale(0.96);
-    }
-
-    /* Back motors (5-8) */
-    .motor-btn.back {
-      background: var(--back-btn);
-      border-color: rgba(255,61,107,0.2);
-    }
-
-    .motor-btn.back::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(255,61,107,0.15) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity 0.15s ease;
-    }
-
-    .motor-btn.back:active::before,
-    .motor-btn.back.active::before { opacity: 1; }
-
-    .motor-btn.back:active,
-    .motor-btn.back.active {
-      background: rgba(255,61,107,0.15);
-      border-color: var(--back-active);
-      box-shadow: 0 0 20px rgba(255,61,107,0.3), inset 0 0 20px rgba(255,61,107,0.05);
-      transform: scale(0.96);
-    }
-
-    .motor-num {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1.4rem;
-      font-weight: 700;
-      line-height: 1;
-      transition: color 0.15s ease;
-    }
-
-    .front .motor-num { color: rgba(0,229,255,0.7); }
-    .front.active .motor-num, .front:active .motor-num { color: var(--front-active); }
-
-    .back .motor-num { color: rgba(255,61,107,0.7); }
-    .back.active .motor-num, .back:active .motor-num { color: var(--back-active); }
-
-    .motor-label {
-      font-size: 0.55rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-family: 'Share Tech Mono', monospace;
-    }
-
-    /* Divider */
-    .divider {
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .divider-line {
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .divider-text {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.15em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    /* Log */
-    .log {
-      width: 100%;
-      max-width: 420px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-      min-height: 40px;
-      line-height: 1.6;
-    }
-
-    .log span { color: var(--accent); }
-    .log span.err { color: var(--accent2); }
-
-    /* Disabled state */
-    body.disconnected .motor-btn {
-      opacity: 0.4;
-      pointer-events: none;
-    }
+    .connect-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; padding: 8px 16px; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
+    .connect-btn.disconnect { border-color: var(--accent2); color: var(--accent2); }
+    .motor-section { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; }
+    .section-label { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .motor-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .motor-btn { position: relative; aspect-ratio: 1; border-radius: 14px; border: 2px solid transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; user-select: none; touch-action: none; overflow: hidden; }
+    .motor-btn.front { background: var(--front-btn); border-color: rgba(0,229,255,0.2); }
+    .motor-btn.front.active { background: rgba(0,229,255,0.15); border-color: var(--front-active); transform: scale(0.96); box-shadow: 0 0 15px rgba(0,229,255,0.2); }
+    .motor-btn.back { background: var(--back-btn); border-color: rgba(255,61,107,0.2); }
+    .motor-btn.back.active { background: rgba(255,61,107,0.15); border-color: var(--back-active); transform: scale(0.96); box-shadow: 0 0 15px rgba(255,61,107,0.2); }
+    .motor-num { font-family: 'Share Tech Mono', monospace; font-size: 1.4rem; font-weight: 700; color: rgba(255,255,255,0.5); }
+    .active .motor-num { color: #fff; }
+    .motor-label { font-size: 0.55rem; color: var(--muted); font-family: 'Share Tech Mono', monospace; }
+    .divider { width: 100%; max-width: 420px; display: flex; align-items: center; gap: 12px; }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--muted); text-transform: uppercase; }
+    .log { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--muted); min-height: 40px; }
+    body.disconnected .motor-btn { opacity: 0.4; pointer-events: none; }
   </style>
 </head>
 <body class="disconnected">
-
   <h1>⚡ Haptic Vest Controller</h1>
-
-  <!-- Status + Connect -->
   <div class="status-bar">
     <div class="status-indicator">
       <div class="status-dot" id="statusDot"></div>
@@ -312,157 +58,72 @@
     </div>
     <button class="connect-btn" id="connectBtn" onclick="toggleConnect()">Connect</button>
   </div>
-
-  <!-- Front motors 1–4 -->
-  <div class="motor-section">
-    <div class="section-label front">▲ Front Motors</div>
-    <div class="motor-row" id="frontRow"></div>
-  </div>
-
-  <div class="divider">
-    <div class="divider-line"></div>
-    <div class="divider-text">vest</div>
-    <div class="divider-line"></div>
-  </div>
-
-  <!-- Back motors 5–8 -->
-  <div class="motor-section">
-    <div class="section-label back">▼ Back Motors</div>
-    <div class="motor-row" id="backRow"></div>
-  </div>
-
-  <!-- Log -->
+  <div class="motor-section"><div class="section-label front">▲ Front Motors</div><div id="frontRow" class="motor-row"></div></div>
+  <div class="divider"><div class="divider-line"></div><div class="divider-text">vest</div><div class="divider-line"></div></div>
+  <div class="motor-section"><div class="section-label back">▼ Back Motors</div><div id="backRow" class="motor-row"></div></div>
   <div class="log" id="log">Waiting for connection...</div>
 
   <script>
-    // ── BLE constants ──────────────────────────────────────────────────────────
-    const SERVICE_UUID        = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+    const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
     const CHARACTERISTIC_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+    let device = null, characteristic = null;
 
-    let device = null;
-    let characteristic = null;
-
-    // ── Build buttons ──────────────────────────────────────────────────────────
-    const frontLabels = ['FL', 'FR', 'FL', 'FR'];
-    const backLabels  = ['BL', 'BR', 'BL', 'BR'];
-
-    function buildButtons(containerId, startNum, type, labels) {
+    function buildButtons(containerId, startNum, type) {
       const row = document.getElementById(containerId);
+      const labels = ['UL', 'UR', 'LL', 'LR'];
       for (let i = 0; i < 4; i++) {
-        const motorNum = startNum + i;
+        const num = startNum + i;
         const btn = document.createElement('div');
         btn.className = `motor-btn ${type}`;
-        btn.id = `btn${motorNum}`;
-        btn.innerHTML = `
-          <span class="motor-num">${motorNum}</span>
-          <span class="motor-label">${labels[i]}</span>
-        `;
-
-        // Touch events (mobile)
-        btn.addEventListener('touchstart', (e) => {
-          e.preventDefault();
-          motorOn(motorNum, btn);
-        }, { passive: false });
-
-        btn.addEventListener('touchend', (e) => {
-          e.preventDefault();
-          motorOff(motorNum, btn);
-        }, { passive: false });
-
-        // Mouse events (desktop testing)
-        btn.addEventListener('mousedown', () => motorOn(motorNum, btn));
-        btn.addEventListener('mouseup',   () => motorOff(motorNum, btn));
-        btn.addEventListener('mouseleave',() => motorOff(motorNum, btn));
-
+        btn.innerHTML = `<span class="motor-num">${num}</span><span class="motor-label">${labels[i]}</span>`;
+        btn.onpointerdown = (e) => { e.preventDefault(); trigger(num, 1, btn); };
+        btn.onpointerup = (e) => { e.preventDefault(); trigger(num, 0, btn); };
+        btn.onpointerleave = (e) => { e.preventDefault(); trigger(num, 0, btn); };
         row.appendChild(btn);
       }
     }
+    buildButtons('frontRow', 1, 'front');
+    buildButtons('backRow', 5, 'back');
 
-    buildButtons('frontRow', 1, 'front', frontLabels);
-    buildButtons('backRow',  5, 'back',  backLabels);
-
-    // ── Motor control ──────────────────────────────────────────────────────────
-    async function sendCommand(cmd) {
+    async function trigger(num, state, btn) {
       if (!characteristic) return;
-      try {
-        const encoder = new TextEncoder();
-        await characteristic.writeValue(encoder.encode(cmd));
-      } catch (err) {
-        log(`<span class="err">Send error: ${err.message}</span>`);
-      }
+      state === 1 ? btn.classList.add('active') : btn.classList.remove('active');
+      const data = new TextEncoder().encode(`!B${num}${state}`);
+      try { await characteristic.writeValueWithoutResponse(data); } catch (e) {}
     }
 
-    function motorOn(num, btn) {
-      if (!characteristic) return;
-      btn.classList.add('active');
-      sendCommand(`${num} 99999000`);
-      log(`<span>Motor ${num} ON</span>`);
-    }
-
-    function motorOff(num, btn) {
-      if (!characteristic) return;
-      btn.classList.remove('active');
-      sendCommand(`cancel ${num}`);
-      log(`Motor ${num} off`);
-    }
-
-    // ── BLE connect/disconnect ─────────────────────────────────────────────────
     async function toggleConnect() {
-      if (device && device.gatt.connected) {
-        device.gatt.disconnect();
-      } else {
-        await connect();
+      if (device && device.gatt.connected) device.gatt.disconnect();
+      else {
+        try {
+          log('Scanning...');
+          device = await navigator.bluetooth.requestDevice({ filters: [{ namePrefix: 'Hapt' }], optionalServices: [SERVICE_UUID] });
+          device.addEventListener('gattserverdisconnected', onDisconnected);
+          const server = await device.gatt.connect();
+          const service = await server.getPrimaryService(SERVICE_UUID);
+          characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+          onConnected();
+        } catch (err) { log('Error: ' + err.message); }
       }
     }
-
-    async function connect() {
-      try {
-        log('Scanning for Haptic device...');
-        device = await navigator.bluetooth.requestDevice({
-          filters: [{ name: 'Haptic' }],
-          optionalServices: [SERVICE_UUID]
-        });
-
-        device.addEventListener('gattserverdisconnected', onDisconnected);
-
-        log('Connecting...');
-        const server  = await device.gatt.connect();
-        const service = await server.getPrimaryService(SERVICE_UUID);
-        characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
-
-        onConnected();
-      } catch (err) {
-        log(`<span class="err">Error: ${err.message}</span>`);
-        device = null;
-        characteristic = null;
-      }
-    }
-
     function onConnected() {
       document.getElementById('statusDot').classList.add('connected');
-      document.getElementById('statusText').classList.add('connected');
       document.getElementById('statusText').textContent = 'CONNECTED';
       document.getElementById('connectBtn').textContent = 'Disconnect';
       document.getElementById('connectBtn').classList.add('disconnect');
       document.body.classList.remove('disconnected');
-      log(`<span>Connected to ${device.name}</span>`);
+      log('System Ready.');
     }
-
     function onDisconnected() {
       document.getElementById('statusDot').classList.remove('connected');
-      document.getElementById('statusText').classList.remove('connected');
       document.getElementById('statusText').textContent = 'DISCONNECTED';
       document.getElementById('connectBtn').textContent = 'Connect';
       document.getElementById('connectBtn').classList.remove('disconnect');
       document.body.classList.add('disconnected');
       characteristic = null;
-      log('<span class="err">Disconnected</span>');
+      log('Disconnected.');
     }
-
-    // ── Log helper ─────────────────────────────────────────────────────────────
-    function log(msg) {
-      document.getElementById('log').innerHTML = msg;
-    }
+    function log(m) { document.getElementById('log').innerHTML = m; }
   </script>
 </body>
 </html>
