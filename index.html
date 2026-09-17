@@ -426,7 +426,10 @@
       try {
         log('Scanning for Haptic device...');
         device = await navigator.bluetooth.requestDevice({
-          filters: [{ name: 'Haptic' }],
+          filters: [
+            { name: 'Haptic' },
+            { services: [SERVICE_UUID] }
+          ],
           optionalServices: [SERVICE_UUID]
         });
 
