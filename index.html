@@ -18,7 +18,7 @@
       --back-btn: #2b0d1e;
       --back-active: #ff3d6b;
       --text: #e0e0f0;
-      --muted: #555570;
+      --muted: #6a6a85;
       --connected: #00ff99;
       --disconnected: #ff3d6b;
     }
@@ -33,8 +33,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px;
-      gap: 20px;
+      padding: 20px 16px 40px;
+      gap: 16px;
       background-image:
         radial-gradient(ellipse at 20% 0%, rgba(0,229,255,0.05) 0%, transparent 60%),
         radial-gradient(ellipse at 80% 100%, rgba(255,61,107,0.05) 0%, transparent 60%);
@@ -50,426 +50,733 @@
       opacity: 0.9;
     }
 
-    /* Status bar */
+    /* ── Status bar ── */
     .status-bar {
-      width: 100%;
-      max-width: 420px;
+      width: 100%; max-width: 420px;
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
-
-    .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--disconnected);
-      box-shadow: 0 0 8px var(--disconnected);
-      transition: all 0.3s ease;
-    }
-
-    .status-dot.connected {
-      background: var(--connected);
-      box-shadow: 0 0 8px var(--connected);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    .status-text {
-      color: var(--muted);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.05em;
-    }
-
+    .status-indicator { display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--disconnected); box-shadow: 0 0 8px var(--disconnected); transition: all 0.3s ease; }
+    .status-dot.connected { background: var(--connected); box-shadow: 0 0 8px var(--connected); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .status-text { color: var(--muted); font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; letter-spacing: 0.05em; }
     .status-text.connected { color: var(--connected); }
 
-    /* Connect button */
     .connect-btn {
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.15em;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-transform: uppercase;
+      background: transparent; border: 1px solid var(--accent); color: var(--accent);
+      font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em;
+      padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase;
     }
+    .connect-btn:active { background: var(--accent); color: var(--bg); }
+    .connect-btn.disconnect { border-color: var(--accent2); color: var(--accent2); }
+    .connect-btn.disconnect:active { background: var(--accent2); color: var(--bg); }
 
-    .connect-btn:hover, .connect-btn:active {
-      background: var(--accent);
-      color: var(--bg);
+    /* ── Tabs ── */
+    .tabs { width: 100%; max-width: 420px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .tab {
+      background: var(--panel); border: 1px solid var(--border); color: var(--muted);
+      font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 10px 0; border-radius: 10px; cursor: pointer;
     }
+    .tab.active { color: var(--accent); border-color: var(--accent); }
 
-    .connect-btn.disconnect {
-      border-color: var(--accent2);
-      color: var(--accent2);
+    .panel { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 14px; }
+    .panel[hidden] { display: none; }
+
+    .card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+      padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
     }
+    .card h2 { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+    .hint { font-size: 0.85rem; color: var(--muted); line-height: 1.35; }
 
-    .connect-btn.disconnect:hover, .connect-btn.disconnect:active {
-      background: var(--accent2);
-      color: var(--bg);
+    .btn-row { display: flex; gap: 8px; }
+    .btn {
+      flex: 1; background: transparent; border: 1px solid var(--accent); color: var(--accent);
+      font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 11px 6px; border-radius: 8px; cursor: pointer;
     }
+    .btn:active:not(:disabled) { background: var(--accent); color: var(--bg); }
+    .btn:disabled { opacity: 0.35; cursor: default; }
+    .btn.danger { border-color: var(--accent2); color: var(--accent2); }
+    .btn.danger:active:not(:disabled) { background: var(--accent2); color: var(--bg); }
+    .btn.small { font-size: 0.65rem; padding: 8px 4px; border-color: var(--border); color: var(--muted); }
 
-    /* Motor grid */
-    .motor-section {
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    input[type=text], select {
+      width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 10px; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
     }
+    input[type=range] { width: 100%; accent-color: var(--accent); }
+    label.row { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 0.9rem; }
 
-    .section-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding-left: 4px;
-    }
+    .readouts { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--muted); }
+    .readouts b { color: var(--accent); font-weight: 400; text-align: right; }
 
+    /* ── Dial ── */
+    .dial-wrap { display: flex; justify-content: center; }
+    #dial { width: 190px; height: 190px; }
+    .dial-ring { fill: none; stroke: var(--border); stroke-width: 2; }
+    .dial-tick { stroke: var(--accent); stroke-width: 3; }
+    .dial-label { fill: var(--muted); font-family: 'Share Tech Mono', monospace; font-size: 9px; text-anchor: middle; }
+    #dialTarget circle { fill: var(--accent2); }
+    #dialTarget.ontrack circle { fill: var(--connected); }
+
+    /* ── Beacon list ── */
+    .beacon-row { display: flex; justify-content: space-between; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--muted); }
+    .beacon-row.in-range { color: var(--connected); }
+    .beacon-row.stale { opacity: 0.4; }
+
+    /* ── Motor grid (manual) ── */
+    .motor-section { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+    .section-label { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); padding-left: 4px; }
     .section-label.front { color: rgba(0,229,255,0.5); }
     .section-label.back  { color: rgba(255,61,107,0.5); }
 
-    .motor-row {
-      display: grid;
-      gap: 10px;
-    }
-
-    .motor-row.front-row {
-      grid-template-columns: repeat(5, 1fr);
-    }
-
-    .motor-row.back-row {
-      grid-template-columns: repeat(3, 1fr);
-    }
+    .motor-row { display: grid; gap: 10px; }
+    .motor-row.front-row { grid-template-columns: repeat(5, 1fr); }
+    .motor-row.back-row  { grid-template-columns: repeat(3, 1fr); }
 
     .motor-btn {
-      position: relative;
-      aspect-ratio: 1;
-      border-radius: 14px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: all 0.15s ease;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: none;
-      overflow: hidden;
+      position: relative; aspect-ratio: 1; border-radius: 14px; border: 2px solid transparent; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      transition: all 0.15s ease; user-select: none; -webkit-user-select: none; touch-action: none; overflow: hidden;
     }
-
-    /* Front motors (1-4) */
-    .motor-btn.front {
-      background: var(--front-btn);
-      border-color: rgba(0,229,255,0.2);
-    }
-
-    .motor-btn.front::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(0,229,255,0.15) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity 0.15s ease;
-    }
-
-    .motor-btn.front:active::before,
-    .motor-btn.front.active::before { opacity: 1; }
-
-    .motor-btn.front:active,
-    .motor-btn.front.active {
-      background: rgba(0,229,255,0.15);
-      border-color: var(--front-active);
-      box-shadow: 0 0 20px rgba(0,229,255,0.3), inset 0 0 20px rgba(0,229,255,0.05);
-      transform: scale(0.96);
-    }
-
-    /* Back motors (5-8) */
-    .motor-btn.back {
-      background: var(--back-btn);
-      border-color: rgba(255,61,107,0.2);
-    }
-
-    .motor-btn.back::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, rgba(255,61,107,0.15) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity 0.15s ease;
-    }
-
-    .motor-btn.back:active::before,
-    .motor-btn.back.active::before { opacity: 1; }
-
-    .motor-btn.back:active,
-    .motor-btn.back.active {
-      background: rgba(255,61,107,0.15);
-      border-color: var(--back-active);
-      box-shadow: 0 0 20px rgba(255,61,107,0.3), inset 0 0 20px rgba(255,61,107,0.05);
-      transform: scale(0.96);
-    }
-
-    .motor-num {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 1.4rem;
-      font-weight: 700;
-      line-height: 1;
-      transition: color 0.15s ease;
-    }
-
+    .motor-btn.front { background: var(--front-btn); border-color: rgba(0,229,255,0.2); }
+    .motor-btn.front.active { background: rgba(0,229,255,0.15); border-color: var(--front-active); box-shadow: 0 0 20px rgba(0,229,255,0.3); transform: scale(0.96); }
+    .motor-btn.back { background: var(--back-btn); border-color: rgba(255,61,107,0.2); }
+    .motor-btn.back.active { background: rgba(255,61,107,0.15); border-color: var(--back-active); box-shadow: 0 0 20px rgba(255,61,107,0.3); transform: scale(0.96); }
+    .motor-num { font-family: 'Share Tech Mono', monospace; font-size: 1.4rem; font-weight: 700; line-height: 1; }
     .front .motor-num { color: rgba(0,229,255,0.7); }
-    .front.active .motor-num, .front:active .motor-num { color: var(--front-active); }
-
+    .front.active .motor-num { color: var(--front-active); }
     .back .motor-num { color: rgba(255,61,107,0.7); }
-    .back.active .motor-num, .back:active .motor-num { color: var(--back-active); }
+    .back.active .motor-num { color: var(--back-active); }
+    .motor-label { font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-family: 'Share Tech Mono', monospace; }
 
-    .motor-label {
-      font-size: 0.55rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-family: 'Share Tech Mono', monospace;
-    }
+    .divider { width: 100%; display: flex; align-items: center; gap: 12px; }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
 
-    /* Divider */
-    .divider {
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    body.disconnected .motor-btn { opacity: 0.4; pointer-events: none; }
 
-    .divider-line {
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
+    details.settings { width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; }
+    details.settings summary { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+    details.settings .card { border: none; padding: 12px 0 0; }
 
-    .divider-text {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.15em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    /* Log */
     .log {
-      width: 100%;
-      max-width: 420px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-      min-height: 40px;
-      line-height: 1.6;
+      width: 100%; max-width: 420px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+      padding: 10px 14px; font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--muted);
+      letter-spacing: 0.05em; min-height: 40px; line-height: 1.6;
     }
-
     .log span { color: var(--accent); }
     .log span.err { color: var(--accent2); }
-
-    /* Disabled state */
-    body.disconnected .motor-btn {
-      opacity: 0.4;
-      pointer-events: none;
-    }
   </style>
 </head>
 <body class="disconnected">
 
   <h1>⚡ Haptic Vest Controller</h1>
 
-  <!-- Status + Connect -->
   <div class="status-bar">
     <div class="status-indicator">
       <div class="status-dot" id="statusDot"></div>
       <span class="status-text" id="statusText">DISCONNECTED</span>
     </div>
-    <button class="connect-btn" id="connectBtn" onclick="toggleConnect()">Connect</button>
+    <button class="connect-btn" id="connectBtn">Connect</button>
   </div>
 
-  <!-- Front motors 1–4 -->
-  <div class="motor-section">
-    <div class="section-label front">▲ Front Motors (1–5)</div>
-    <div class="motor-row front-row" id="frontRow"></div>
+  <div class="tabs">
+    <button class="tab active" data-tab="manual">Manual</button>
+    <button class="tab" data-tab="record">Record</button>
+    <button class="tab" data-tab="navigate">Navigate</button>
   </div>
 
-  <div class="divider">
-    <div class="divider-line"></div>
-    <div class="divider-text">vest</div>
-    <div class="divider-line"></div>
-  </div>
+  <!-- ═════════ MANUAL ═════════ -->
+  <section class="panel" id="tab-manual">
+    <div class="motor-section">
+      <div class="section-label front">▲ Front Motors (1–5)</div>
+      <div class="motor-row front-row" id="frontRow"></div>
+    </div>
+    <div class="divider"><div class="divider-line"></div><div class="divider-text">vest</div><div class="divider-line"></div></div>
+    <div class="motor-section">
+      <div class="section-label back">▼ Back Motors (6–8)</div>
+      <div class="motor-row back-row" id="backRow"></div>
+    </div>
+  </section>
 
-  <!-- Back motors 5–8 -->
-  <div class="motor-section">
-    <div class="section-label back">▼ Back Motors (6–8)</div>
-    <div class="motor-row back-row" id="backRow"></div>
-  </div>
+  <!-- ═════════ RECORD ═════════ -->
+  <section class="panel" id="tab-record" hidden>
+    <div class="card">
+      <h2>Record a route</h2>
+      <p class="hint">Wear the vest with the phone in its normal spot. Press Start, then walk the route. Each time you pass a waypoint beacon the app saves the direction you were walking. End at the destination beacon, then press Finish.</p>
+      <input type="text" id="routeName" placeholder="Route name" maxlength="40">
+      <div class="btn-row">
+        <button class="btn" id="recStart">Start recording</button>
+        <button class="btn" id="recFinish" disabled>Finish &amp; save</button>
+      </div>
+      <div class="readouts">
+        <span>Status</span><b id="recStatus">Idle</b>
+        <span>Legs recorded</span><b id="recLegs">0</b>
+        <span>Heading now</span><b id="recHeading">—</b>
+      </div>
+      <div class="hint" id="recList"></div>
+    </div>
+  </section>
 
-  <!-- Log -->
+  <!-- ═════════ NAVIGATE ═════════ -->
+  <section class="panel" id="tab-navigate" hidden>
+    <div class="card">
+      <h2>Route</h2>
+      <select id="routeSelect"></select>
+      <div class="btn-row">
+        <button class="btn" id="navStart">Start</button>
+        <button class="btn danger" id="navStop">Stop</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn small" id="exportBtn">Copy route</button>
+        <button class="btn small" id="importBtn">Import</button>
+        <button class="btn small" id="deleteBtn">Delete</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Guidance</h2>
+      <div class="dial-wrap">
+        <svg id="dial" viewBox="-100 -100 200 200">
+          <circle class="dial-ring" r="90"></circle>
+          <circle class="dial-ring" r="55" stroke-dasharray="3 5"></circle>
+          <line class="dial-tick" x1="0" y1="-90" x2="0" y2="-76"></line>
+          <text class="dial-label" x="0" y="-62">FRONT</text>
+          <text class="dial-label" x="0" y="72">BACK</text>
+          <g id="dialTarget"><circle cx="0" cy="-72" r="10"></circle></g>
+        </svg>
+      </div>
+      <p class="hint">The buzz shows where your next waypoint is relative to you. Turn toward the buzz until it reaches front-centre (motor 3), then walk.</p>
+      <div class="readouts">
+        <span>Leg</span><b id="navLeg">—</b>
+        <span>Target heading</span><b id="navTarget">—</b>
+        <span>Your heading</span><b id="navHeading">—</b>
+        <span>Error</span><b id="navErr">—</b>
+        <span>Active motor</span><b id="navMotor">—</b>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Direction test (no walking needed)</h2>
+      <label class="row"><span>Simulate heading error</span><input type="checkbox" id="simOn"></label>
+      <input type="range" id="simErr" min="-180" max="180" value="0" step="1">
+      <div class="readouts"><span>Simulated error</span><b id="simVal">0°</b></div>
+      <p class="hint">Drag the slider and check the right motor buzzes on your body: − is target to your left, + is to your right, ±180 is directly behind.</p>
+    </div>
+  </section>
+
+  <!-- ═════════ BEACONS (record + navigate) ═════════ -->
+  <section class="panel" id="beaconPanel" hidden>
+    <div class="card">
+      <h2>Waypoint beacons heard</h2>
+      <div id="beaconList" class="hint">Nothing heard yet.</div>
+    </div>
+  </section>
+
+  <details class="settings">
+    <summary>Settings</summary>
+    <div class="card">
+      <label class="row"><span>Phone position</span>
+        <select id="phonePos">
+          <option value="upright-body">Upright, screen facing body</option>
+          <option value="upright-out">Upright, screen facing outward</option>
+          <option value="flat">Flat, top pointing forward</option>
+        </select>
+      </label>
+      <label class="row"><span>On-course window ±<span id="dbVal">5</span>°</span></label>
+      <input type="range" id="deadband" min="2" max="20" step="1">
+      <label class="row"><span>Waypoint trigger <span id="rssiVal">-65</span> dBm</span></label>
+      <input type="range" id="triggerRssi" min="-95" max="-40" step="1">
+      <p class="hint">Trigger: a waypoint counts as reached when its signal is stronger than this. Stand where you want it to trigger and read the dBm in the beacon list, then set this just below it.</p>
+    </div>
+  </details>
+
   <div class="log" id="log">Waiting for connection...</div>
 
   <script>
-    // ── BLE constants ──────────────────────────────────────────────────────────
-    const SERVICE_UUID        = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-    const CHARACTERISTIC_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+    // ════════════════════════════════════════════════════════════════════════
+    //  PURE LOGIC (no DOM) — tested separately in node
+    // ════════════════════════════════════════════════════════════════════════
+    // <logic>
+    const HYST = 2;   // degrees an error must pass a sector edge by before the motor switches
+
+    function norm360(a) { return ((a % 360) + 360) % 360; }
+
+    // Signed shortest turn from `current` to `target`, in (-180, 180].
+    // Positive = target is clockwise of you (to your right).
+    function angDiff(target, current) {
+      let d = norm360(target - current);
+      if (d > 180) d -= 360;
+      return d;
+    }
+
+    // Smooth a heading without breaking at the 359°→0° wrap.
+    function circEma(prev, next, k) {
+      if (prev == null) return next;
+      return norm360(prev + k * angDiff(next, prev));
+    }
+
+    function circMean(arr) {
+      let s = 0, c = 0;
+      for (const h of arr) { s += Math.sin(h * Math.PI / 180); c += Math.cos(h * Math.PI / 180); }
+      return norm360(Math.atan2(s, c) * 180 / Math.PI);
+    }
+
+    // Compass heading (0–360°, clockwise from north) of the wearer's forward direction,
+    // from the phone's absolute orientation angles.
+    function headingFromOrientation(alpha, beta, gamma, mode) {
+      const r = Math.PI / 180;
+      const cA = Math.cos(alpha * r), sA = Math.sin(alpha * r);
+      const cB = Math.cos(beta  * r), sB = Math.sin(beta  * r);
+      const cG = Math.cos(gamma * r), sG = Math.sin(gamma * r);
+      let east, north;
+      if (mode === 'flat') {                       // forward = phone's top edge (device +y)
+        east  = -cB * sA;
+        north =  cA * cB;
+      } else {                                      // upright: forward is along the screen normal (device z)
+        east  = cG * sA * sB + cA * sG;
+        north = sA * sG - cA * cG * sB;
+        if (mode === 'upright-body') { east = -east; north = -north; }   // screen faces wearer → forward is out of the back
+      }
+      return norm360(Math.atan2(east, north) * 180 / Math.PI);
+    }
+
+    // Which single motor to buzz for a heading error. One motor at a time.
+    // Motors 1–5 left→right across the chest, 6–8 left→right across the back (as worn).
+    //   |err| ≤ deadband   → 3        (on course, walk forward)
+    //   up to 25°          → 2 / 4
+    //   up to 100°         → 1 / 5
+    //   up to 160°         → 6 / 8    (target is behind-left / behind-right)
+    //   beyond 160°        → 7        (target is directly behind)
+    function motorForAbs(absErr, side, deadband) {
+      if (absErr <= deadband) return 3;
+      if (absErr <= 25)  return side < 0 ? 2 : 4;
+      if (absErr <= 100) return side < 0 ? 1 : 5;
+      if (absErr <= 160) return side < 0 ? 6 : 8;
+      return 7;
+    }
+
+    // Same as motorForAbs, with a little stickiness so the motor doesn't flicker on a sector edge:
+    // the previous motor is only released once the error is more than `hyst` degrees PAST its
+    // outer edge. Moving inward (toward on-course) switches exactly at the edge, so the
+    // on-course motor engages at the full ±deadband, not later.
+    function pickMotor(err, prev, deadband, hyst) {
+      const side = err < 0 ? -1 : 1;
+      const a = Math.abs(err);
+      const fresh = motorForAbs(a, side, deadband);
+      if (prev == null || fresh === prev) return fresh;
+      if (motorForAbs(Math.max(0, a - hyst), side, deadband) === prev) return prev;
+      return fresh;
+    }
+
+    // Representative walking direction for one recorded leg: find the most common
+    // 10° bin (ignores the turns at the ends of the leg) and average the samples near it.
+    function legHeading(samples) {
+      if (!samples.length) return null;
+      const bins = new Array(36).fill(0);
+      for (const h of samples) bins[Math.floor(norm360(h) / 10) % 36]++;
+      let peak = 0;
+      bins.forEach((n, i) => { if (n > bins[peak]) peak = i; });
+      const centre = peak * 10 + 5;
+      const near = samples.filter(h => Math.abs(angDiff(h, centre)) <= 20);
+      return circMean(near.length ? near : samples);
+    }
+    // </logic>
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  Helpers + settings
+    // ════════════════════════════════════════════════════════════════════════
+    const $ = id => document.getElementById(id);
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    function log(msg) { $('log').innerHTML = msg; }
+    function loadJSON(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
+    function saveJSON(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+
+    const settings = Object.assign({ phonePosition: 'upright-body', deadband: 5, triggerRssi: -65 }, loadJSON('hapticSettings', {}));
+
+    const MOTOR_NAMES = { 1: 'far left', 2: 'left', 3: 'ahead', 4: 'right', 5: 'far right', 6: 'back-left', 7: 'behind', 8: 'back-right' };
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  BLE
+    // ════════════════════════════════════════════════════════════════════════
+    const SERVICE_UUID  = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+    const WRITE_UUID    = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';   // phone → vest
+    const NOTIFY_UUID   = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';   // vest → phone (beacon reports)
 
     let device = null;
-    let characteristic = null;
+    let writeChar = null;
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
 
-    // ── Build buttons ──────────────────────────────────────────────────────────
-    const frontLabels = ['F1', 'F2', 'F3', 'F4', 'F5'];
-    const backLabels  = ['B1', 'B2', 'B3'];
-
-    function buildButtons(containerId, startNum, type, labels) {
-      const row = document.getElementById(containerId);
-      for (let i = 0; i < labels.length; i++) {
-        const motorNum = startNum + i;
-        const btn = document.createElement('div');
-        btn.className = `motor-btn ${type}`;
-        btn.id = `btn${motorNum}`;
-        btn.innerHTML = `
-          <span class="motor-num">${motorNum}</span>
-          <span class="motor-label">${labels[i]}</span>
-        `;
-
-        // Touch events (mobile)
-        btn.addEventListener('touchstart', (e) => {
-          e.preventDefault();
-          motorOn(motorNum, btn);
-        }, { passive: false });
-
-        btn.addEventListener('touchend', (e) => {
-          e.preventDefault();
-          motorOff(motorNum, btn);
-        }, { passive: false });
-
-        // Mouse events (desktop testing)
-        btn.addEventListener('mousedown', () => motorOn(motorNum, btn));
-        btn.addEventListener('mouseup',   () => motorOff(motorNum, btn));
-        btn.addEventListener('mouseleave',() => motorOff(motorNum, btn));
-
-        row.appendChild(btn);
-      }
+    // All writes go through one queue, 70 ms apart (the vest treats 50 ms of silence as "end of command").
+    let writeChain = Promise.resolve();
+    function sendCommand(cmd) {
+      writeChain = writeChain.then(async () => {
+        if (!writeChar) return;
+        try { await writeChar.writeValue(encoder.encode(cmd)); }
+        catch (err) { log(`<span class="err">Send error: ${err.message}</span>`); }
+        await sleep(70);
+      });
+      return writeChain;
     }
 
-    buildButtons('frontRow', 1, 'front', frontLabels);
-    buildButtons('backRow',  6, 'back',  backLabels);
-
-    // ── Motor control ──────────────────────────────────────────────────────────
-    async function sendCommand(cmd) {
-      if (!characteristic) return;
-      try {
-        const encoder = new TextEncoder();
-        await characteristic.writeValue(encoder.encode(cmd));
-      } catch (err) {
-        log(`<span class="err">Send error: ${err.message}</span>`);
-      }
-    }
-
-    function motorOn(num, btn) {
-      if (!characteristic) return;
-      btn.classList.add('active');
-      sendCommand(`${num} 99999000`);
-      log(`<span>Motor ${num} ON</span>`);
-    }
-
-    function motorOff(num, btn) {
-      if (!characteristic) return;
-      btn.classList.remove('active');
-      sendCommand(`cancel ${num}`);
-      log(`Motor ${num} off`);
-    }
-
-    // ── BLE connect/disconnect ─────────────────────────────────────────────────
     async function toggleConnect() {
-      if (device && device.gatt.connected) {
-        device.gatt.disconnect();
-      } else {
-        await connect();
-      }
+      if (device && device.gatt.connected) device.gatt.disconnect();
+      else await connect();
     }
 
     async function connect() {
       try {
         log('Scanning for Haptic device...');
-        device = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true,
-          optionalServices: [SERVICE_UUID]
-        });
-
+        device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: [SERVICE_UUID] });
         device.addEventListener('gattserverdisconnected', onDisconnected);
-
         log('Connecting...');
-        const server  = await device.gatt.connect();
+        const server = await device.gatt.connect();
         const service = await server.getPrimaryService(SERVICE_UUID);
-        characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
-
+        writeChar = await service.getCharacteristic(WRITE_UUID);
+        const notifyChar = await service.getCharacteristic(NOTIFY_UUID);
+        await notifyChar.startNotifications();
+        notifyChar.addEventListener('characteristicvaluechanged', e => onNotifyText(decoder.decode(e.target.value, { stream: true })));
         onConnected();
       } catch (err) {
         log(`<span class="err">Error: ${err.message}</span>`);
-        device = null;
-        characteristic = null;
+        device = null; writeChar = null;
       }
     }
 
     function onConnected() {
-      document.getElementById('statusDot').classList.add('connected');
-      document.getElementById('statusText').classList.add('connected');
-      document.getElementById('statusText').textContent = 'CONNECTED';
-      document.getElementById('connectBtn').textContent = 'Disconnect';
-      document.getElementById('connectBtn').classList.add('disconnect');
+      $('statusDot').classList.add('connected');
+      $('statusText').classList.add('connected');
+      $('statusText').textContent = 'CONNECTED';
+      $('connectBtn').textContent = 'Disconnect';
+      $('connectBtn').classList.add('disconnect');
       document.body.classList.remove('disconnected');
-      log(`<span>Connected to ${device.name}</span>`);
+      nav.motor = null;     // force the next guidance tick to re-send its motor
+      log(`<span>Connected to ${device.name || 'vest'}</span>`);
     }
 
     function onDisconnected() {
-      document.getElementById('statusDot').classList.remove('connected');
-      document.getElementById('statusText').classList.remove('connected');
-      document.getElementById('statusText').textContent = 'DISCONNECTED';
-      document.getElementById('connectBtn').textContent = 'Connect';
-      document.getElementById('connectBtn').classList.remove('disconnect');
+      $('statusDot').classList.remove('connected');
+      $('statusText').classList.remove('connected');
+      $('statusText').textContent = 'DISCONNECTED';
+      $('connectBtn').textContent = 'Connect';
+      $('connectBtn').classList.remove('disconnect');
       document.body.classList.add('disconnected');
-      characteristic = null;
-      log('<span class="err">Disconnected</span>');
+      writeChar = null;
+      log(`<span class="err">Disconnected${nav.active || rec.active ? ' — route paused until you reconnect' : ''}</span>`);
     }
 
-    // ── Log helper ─────────────────────────────────────────────────────────────
-    function log(msg) {
-      document.getElementById('log').innerHTML = msg;
+    $('connectBtn').addEventListener('click', toggleConnect);
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  Manual buttons
+    // ════════════════════════════════════════════════════════════════════════
+    function buildButtons(containerId, startNum, type, labels) {
+      const row = $(containerId);
+      for (let i = 0; i < labels.length; i++) {
+        const num = startNum + i;
+        const btn = document.createElement('div');
+        btn.className = `motor-btn ${type}`;
+        btn.innerHTML = `<span class="motor-num">${num}</span><span class="motor-label">${labels[i]}</span>`;
+        const on  = () => { if (!writeChar) return; btn.classList.add('active');    sendCommand(`${num} 99999000`); log(`<span>Motor ${num} ON</span>`); };
+        const off = () => { if (!btn.classList.contains('active')) return; btn.classList.remove('active'); sendCommand(`cancel ${num}`); log(`Motor ${num} off`); };
+        btn.addEventListener('touchstart', e => { e.preventDefault(); on(); }, { passive: false });
+        btn.addEventListener('touchend',   e => { e.preventDefault(); off(); }, { passive: false });
+        btn.addEventListener('touchcancel',e => { e.preventDefault(); off(); }, { passive: false });
+        btn.addEventListener('mousedown', on);
+        btn.addEventListener('mouseup', off);
+        btn.addEventListener('mouseleave', off);
+        row.appendChild(btn);
+      }
     }
+    buildButtons('frontRow', 1, 'front', ['F1', 'F2', 'F3', 'F4', 'F5']);
+    buildButtons('backRow',  6, 'back',  ['B1', 'B2', 'B3']);
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  Compass
+    // ════════════════════════════════════════════════════════════════════════
+    let heading = null;           // smoothed
+    let lastOrientationAt = 0;
+    let compassOn = false;
+
+    function onOrientation(e) {
+      if (e.alpha == null || e.beta == null || e.gamma == null) return;
+      const h = headingFromOrientation(e.alpha, e.beta, e.gamma, settings.phonePosition);
+      heading = circEma(heading, h, 0.12);
+      lastOrientationAt = performance.now();
+    }
+
+    async function startCompass() {
+      if (compassOn) return true;
+      try {
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+          const r = await DeviceOrientationEvent.requestPermission();
+          if (r !== 'granted') throw new Error('motion permission denied');
+        }
+      } catch (err) { log(`<span class="err">Compass: ${err.message}</span>`); return false; }
+      if ('ondeviceorientationabsolute' in window) window.addEventListener('deviceorientationabsolute', onOrientation, true);
+      else window.addEventListener('deviceorientation', onOrientation, true);
+      compassOn = true;
+      setTimeout(() => { if (!lastOrientationAt) log('<span class="err">No compass data from this phone/browser.</span>'); }, 2000);
+      return true;
+    }
+    const compassFresh = () => heading != null && performance.now() - lastOrientationAt < 1500;
+
+    // Keep the screen awake while a route is running (a sleeping page stops sending commands).
+    let wakeLock = null;
+    async function keepAwake() { try { if (navigator.wakeLock && !wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } } catch (e) {} }
+    function allowSleep() { try { if (wakeLock) wakeLock.release(); } catch (e) {} wakeLock = null; }
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  Beacons
+    // ════════════════════════════════════════════════════════════════════════
+    const beacons = {};   // id → { ema, seen, hits, last }
+    let rxBuf = '';
+
+    function onNotifyText(chunk) {
+      rxBuf += chunk;
+      let i;
+      while ((i = rxBuf.search(/[\r\n]/)) >= 0) {
+        const line = rxBuf.slice(0, i).trim();
+        rxBuf = rxBuf.slice(i + 1);
+        const m = /^B,(\d+),(-?\d+)$/.exec(line);
+        if (m) onBeacon(+m[1], +m[2]);
+      }
+    }
+
+    function onBeacon(id, rssi) {
+      const now = performance.now();
+      const b = beacons[id] || (beacons[id] = { ema: rssi, seen: 0, hits: 0, last: 0 });
+      b.ema = b.seen ? 0.5 * b.ema + 0.5 * rssi : rssi;
+      b.seen = now;
+      if (b.ema >= settings.triggerRssi) b.hits++; else b.hits = 0;
+      if (b.hits >= 2 && now - b.last > 4000) {      // strong for two reports in a row, and not just triggered
+        b.last = now; b.hits = 0;
+        onBeaconReached(id);
+      }
+      renderBeacons();
+    }
+
+    function renderBeacons() {
+      const ids = Object.keys(beacons).map(Number).sort((a, b) => a - b);
+      if (!ids.length) { $('beaconList').textContent = 'Nothing heard yet.'; return; }
+      const now = performance.now();
+      $('beaconList').innerHTML = ids.map(id => {
+        const b = beacons[id];
+        const stale = now - b.seen > 3000;
+        const cls = stale ? 'stale' : (b.ema >= settings.triggerRssi ? 'in-range' : '');
+        return `<div class="beacon-row ${cls}"><span>WP${id}</span><span>${stale ? 'out of range' : Math.round(b.ema) + ' dBm'}</span></div>`;
+      }).join('');
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  Routes (stored in this browser; Copy/Import moves them between phones)
+    // ════════════════════════════════════════════════════════════════════════
+    let routes = loadJSON('hapticRoutes', {});
+    function refreshRouteSelect() {
+      const sel = $('routeSelect');
+      sel.innerHTML = '';
+      const names = Object.keys(routes);
+      if (!names.length) { const o = document.createElement('option'); o.textContent = 'No routes yet — record one'; o.value = ''; sel.appendChild(o); return; }
+      names.forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = `${n} (${routes[n].legs.length} legs)`; sel.appendChild(o); });
+    }
+
+    $('exportBtn').addEventListener('click', async () => {
+      const n = $('routeSelect').value; if (!n || !routes[n]) return;
+      const txt = JSON.stringify({ name: n, legs: routes[n].legs });
+      try { await navigator.clipboard.writeText(txt); log('<span>Route copied to clipboard</span>'); }
+      catch (e) { prompt('Copy this route:', txt); }
+    });
+    $('importBtn').addEventListener('click', () => {
+      const txt = prompt('Paste route JSON:'); if (!txt) return;
+      try {
+        const r = JSON.parse(txt);
+        if (!Array.isArray(r.legs) || !r.legs.length || !r.legs.every(l => Number.isFinite(l.heading) && Number.isInteger(l.beacon))) throw new Error('not a valid route');
+        const name = String(r.name || 'Imported route').slice(0, 40);
+        routes[name] = { legs: r.legs.map(l => ({ heading: l.heading, beacon: l.beacon })) };
+        saveJSON('hapticRoutes', routes); refreshRouteSelect(); $('routeSelect').value = name;
+        log(`<span>Imported "${name}"</span>`);
+      } catch (e) { log(`<span class="err">Import failed: ${e.message}</span>`); }
+    });
+    $('deleteBtn').addEventListener('click', () => {
+      const n = $('routeSelect').value; if (!n || !routes[n]) return;
+      if (!confirm(`Delete route "${n}"?`)) return;
+      delete routes[n]; saveJSON('hapticRoutes', routes); refreshRouteSelect(); log(`Deleted "${n}"`);
+    });
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  Record
+    // ════════════════════════════════════════════════════════════════════════
+    const rec = { active: false, samples: [], legs: [], lastBeacon: null };
+
+    async function startRecording() {
+      if (!writeChar) return log('<span class="err">Connect to the vest first (it listens for the beacons).</span>');
+      if (!(await startCompass())) return;
+      keepAwake();
+      Object.assign(rec, { active: true, samples: [], legs: [], lastBeacon: null });
+      $('recStart').disabled = true; $('recFinish').disabled = false;
+      log('<span>Recording — walk the route. Each beacon you pass adds a leg.</span>');
+      renderRecord();
+    }
+
+    function finishRecording() {
+      if (!rec.legs.length) return log('<span class="err">No waypoints recorded yet — pass at least one beacon first.</span>');
+      let name = $('routeName').value.trim() || `Route ${Object.keys(routes).length + 1}`;
+      routes[name] = { legs: rec.legs.slice() };
+      saveJSON('hapticRoutes', routes);
+      rec.active = false;
+      allowSleep();
+      $('recStart').disabled = false; $('recFinish').disabled = true;
+      refreshRouteSelect();
+      log(`<span>Saved "${name}" with ${rec.legs.length} legs</span>`);
+      renderRecord();
+    }
+
+    function renderRecord() {
+      $('recStatus').textContent = rec.active ? 'Recording' : 'Idle';
+      $('recLegs').textContent = rec.legs.length;
+      $('recList').innerHTML = rec.legs.map((l, i) => `Leg ${i + 1}: walk ${Math.round(l.heading)}° to WP${l.beacon}`).join('<br>');
+    }
+
+    $('recStart').addEventListener('click', startRecording);
+    $('recFinish').addEventListener('click', finishRecording);
+
+    // Sample the heading every 200 ms while recording
+    setInterval(() => { if (rec.active && compassFresh()) rec.samples.push(heading); }, 200);
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  Navigate
+    // ════════════════════════════════════════════════════════════════════════
+    const nav = { active: false, route: null, leg: 0, motor: null };
+    const sim = { on: false, err: 0 };
+
+    async function startNav() {
+      const name = $('routeSelect').value;
+      if (!name || !routes[name]) return log('<span class="err">Pick a route first.</span>');
+      if (!writeChar) return log('<span class="err">Connect to the vest first.</span>');
+      if (!(await startCompass())) return;
+      keepAwake();
+      nav.route = routes[name]; nav.leg = 0; nav.motor = null; nav.active = true;
+      log(`<span>Navigating "${name}" — leg 1 of ${nav.route.legs.length}</span>`);
+      renderNav();
+    }
+
+    function haltMotors() { nav.motor = null; if (writeChar) sendCommand('solo 0'); }
+
+    function stopNav(msg) {
+      const wasActive = nav.active;
+      nav.active = false;
+      if (wasActive || sim.on) haltMotors();
+      allowSleep();
+      renderNav();
+      if (msg) log(msg);
+    }
+
+    async function arrive() {
+      nav.active = false; nav.motor = null;
+      allowSleep();
+      renderNav();
+      log('<span>Destination reached</span>');
+      for (const m of [1, 2, 3, 4, 5]) { sendCommand(`solo ${m}`); await sleep(250); }   // sweep left→right = "arrived"
+      sendCommand('solo 0');
+    }
+
+    function onBeaconReached(id) {
+      log(`<span>Waypoint WP${id} reached</span>`);
+      if (rec.active) {
+        if (id === rec.lastBeacon) return;
+        if (rec.samples.length < 15) { log(`WP${id} heard too soon after the last one — ignored`); return; }
+        rec.legs.push({ heading: Math.round(legHeading(rec.samples)), beacon: id });
+        rec.samples = []; rec.lastBeacon = id;
+        renderRecord();
+      } else if (nav.active) {
+        if (id !== nav.route.legs[nav.leg].beacon) return;      // only the beacon we're heading for counts
+        nav.leg++;
+        if (nav.leg >= nav.route.legs.length) arrive();
+        else log(`<span>WP${id} reached — leg ${nav.leg + 1} of ${nav.route.legs.length}</span>`);
+      }
+    }
+
+    function updateDial(err, motor) {
+      $('dialTarget').setAttribute('transform', `rotate(${err})`);
+      $('dialTarget').classList.toggle('ontrack', motor === 3);
+    }
+
+    // Guidance tick: 10×/s work out which single motor should be buzzing
+    setInterval(() => {
+      if (!nav.active && !sim.on) return;
+      let err;
+      if (sim.on) err = sim.err;
+      else {
+        if (!compassFresh()) { if (nav.motor !== null) { haltMotors(); log('<span class="err">Compass signal lost — motors off</span>'); } return; }
+        err = angDiff(nav.route.legs[nav.leg].heading, heading);
+      }
+      const m = pickMotor(err, nav.motor, settings.deadband, HYST);
+      if (m !== nav.motor) { nav.motor = m; if (writeChar) sendCommand(`solo ${m}`); }
+      updateDial(err, m);
+      $('navErr').textContent = `${err > 0 ? '+' : ''}${Math.round(err)}°`;
+      $('navMotor').textContent = `${m} (${MOTOR_NAMES[m]})`;
+    }, 100);
+
+    // Readouts: 5×/s
+    setInterval(() => {
+      const hTxt = compassFresh() ? `${Math.round(heading)}°` : '—';
+      $('navHeading').textContent = hTxt;
+      $('recHeading').textContent = hTxt;
+      if (nav.active) {
+        $('navLeg').textContent = `${nav.leg + 1} / ${nav.route.legs.length} → WP${nav.route.legs[nav.leg].beacon}`;
+        $('navTarget').textContent = `${Math.round(nav.route.legs[nav.leg].heading)}°`;
+      }
+      renderBeacons();
+    }, 200);
+
+    function renderNav() {
+      if (!nav.active) {
+        $('navLeg').textContent = '—'; $('navTarget').textContent = '—';
+        if (!sim.on) { $('navErr').textContent = '—'; $('navMotor').textContent = '—'; }
+      }
+    }
+
+    $('navStart').addEventListener('click', startNav);
+    $('navStop').addEventListener('click', () => stopNav('Stopped'));
+
+    $('simOn').addEventListener('change', e => {
+      sim.on = e.target.checked;
+      if (sim.on && !writeChar) log('<span class="err">Connect to the vest to feel the test.</span>');
+      if (!sim.on) { if (!nav.active) haltMotors(); renderNav(); }
+    });
+    $('simErr').addEventListener('input', e => { sim.err = +e.target.value; $('simVal').textContent = `${sim.err}°`; });
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  Tabs + settings UI
+    // ════════════════════════════════════════════════════════════════════════
+    function showTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      ['manual', 'record', 'navigate'].forEach(n => { $('tab-' + n).hidden = n !== name; });
+      $('beaconPanel').hidden = name === 'manual';
+      if (name === 'manual') {            // manual buttons and automatic guidance must never fight over the motors
+        if (nav.active || sim.on) { sim.on = false; $('simOn').checked = false; stopNav('Navigation stopped'); }
+      }
+    }
+    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+
+    $('phonePos').value = settings.phonePosition;
+    $('deadband').value = settings.deadband;   $('dbVal').textContent = settings.deadband;
+    $('triggerRssi').value = settings.triggerRssi; $('rssiVal').textContent = settings.triggerRssi;
+    $('phonePos').addEventListener('change', e => { settings.phonePosition = e.target.value; saveJSON('hapticSettings', settings); heading = null; });
+    $('deadband').addEventListener('input', e => { settings.deadband = +e.target.value; $('dbVal').textContent = settings.deadband; saveJSON('hapticSettings', settings); });
+    $('triggerRssi').addEventListener('input', e => { settings.triggerRssi = +e.target.value; $('rssiVal').textContent = settings.triggerRssi; saveJSON('hapticSettings', settings); });
+
+    refreshRouteSelect();
+    renderRecord();
+    startCompass();
   </script>
 </body>
 </html>
