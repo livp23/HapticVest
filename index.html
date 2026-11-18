@@ -388,6 +388,20 @@
       const near = samples.filter(h => Math.abs(angDiff(h, centre)) <= 20);
       return circMean(near.length ? near : samples);
     }
+
+    // Which leg to move to when beacon `id` is heard while navigating leg `cur`.
+    //   • the beacon we're heading for  → next leg (cur + 1)
+    //   • the beacon AFTER that one     → skip-ahead: we must have missed the current one,
+    //                                     so jump past both (cur + 2)
+    //   • anything else                 → -1 (ignore; avoids jumping on beacons far ahead or behind)
+    // The skip-ahead is never triggered by the beacon we just passed (a route that revisits a
+    // beacon would otherwise jump ahead as soon as the user walks away from it).
+    function legAfterBeacon(legs, cur, id) {
+      if (legs[cur] && legs[cur].beacon === id) return cur + 1;
+      const justPassed = cur > 0 && legs[cur - 1].beacon === id;
+      if (!justPassed && legs[cur + 1] && legs[cur + 1].beacon === id) return cur + 2;
+      return -1;
+    }
     // </logic>
 
     // ════════════════════════════════════════════════════════════════════════
@@ -697,10 +711,15 @@
         rec.samples = []; rec.lastBeacon = id;
         renderRecord();
       } else if (nav.active) {
-        if (id !== nav.route.legs[nav.leg].beacon) return;      // only the beacon we're heading for counts
-        nav.leg++;
-        if (nav.leg >= nav.route.legs.length) arrive();
-        else log(`<span>WP${id} reached — leg ${nav.leg + 1} of ${nav.route.legs.length}</span>`);
+        const legs = nav.route.legs;
+        const next = legAfterBeacon(legs, nav.leg, id);
+        if (next < 0) return;                                   // not the current or the following beacon
+        const skipped = next === nav.leg + 2;
+        const missed = legs[nav.leg].beacon;
+        nav.leg = next;
+        if (nav.leg >= legs.length) arrive();
+        else if (skipped) log(`<span>WP${id} heard before WP${missed} — skipped ahead to leg ${nav.leg + 1} of ${legs.length}</span>`);
+        else log(`<span>WP${id} reached — leg ${nav.leg + 1} of ${legs.length}</span>`);
       }
     }
 
